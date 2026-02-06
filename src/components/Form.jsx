@@ -1,19 +1,25 @@
 import { useState } from "react";
 
 function Form(props) {
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
+  const [dueDate, setDueDate] = useState("");
 
   // NOTE: As written, this function has a bug: it doesn't prevent the user
   // from submitting an empty form. This is left as an exercise for developers
   // working through MDN's React tutorial.
   function handleSubmit(event) {
     event.preventDefault();
-    props.addTask(name);
+    props.addTask(name, dueDate);
     setName("");
+    setDueDate("");
   }
 
   function handleChange(event) {
     setName(event.target.value);
+  }
+
+  function handleDueDateChange(event) {
+    setDueDate(event.target.value);
   }
 
   return (
@@ -33,6 +39,19 @@ function Form(props) {
         value={name}
         onChange={handleChange}
       />
+      <div className="form-group">
+        <label htmlFor="new-todo-due" className="label__sm">
+          Due date (optional)
+        </label>
+        <input
+          type="date"
+          id="new-todo-due"
+          className="input input__lg input__date"
+          name="dueDate"
+          value={dueDate}
+          onChange={handleDueDateChange}
+        />
+      </div>
       <button type="submit" className="btn btn__primary btn__lg">
         Add
       </button>

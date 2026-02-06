@@ -42,12 +42,13 @@ function App(props) {
     setTasks(remainingTasks);
   }
 
-  function editTask(id, newName) {
+  function editTask(id, newName, newDueDate) {
+    const normalizedDueDate = newDueDate ? newDueDate : null;
     const editedTaskList = tasks.map((task) => {
       // if this task has the same ID as the edited task
       if (id === task.id) {
         // Copy the task and update its name
-        return { ...task, name: newName };
+        return { ...task, name: newName, dueDate: normalizedDueDate };
       }
       // Return the original task if it's not the edited task
       return task;
@@ -62,6 +63,7 @@ function App(props) {
         id={task.id}
         name={task.name}
         completed={task.completed}
+        dueDate={task.dueDate}
         key={task.id}
         toggleTaskCompleted={toggleTaskCompleted}
         deleteTask={deleteTask}
@@ -78,13 +80,21 @@ function App(props) {
     />
   ));
 
-  function addTask(name) {
-    const newTask = { id: "todo-" + nanoid(), name: name, completed: false };
+  function addTask(name, dueDate) {
+    const normalizedDueDate = dueDate ? dueDate : null;
+    const newTask = {
+      id: "todo-" + nanoid(),
+      name: name,
+      completed: false,
+      dueDate: normalizedDueDate,
+    };
     setTasks([...tasks, newTask]);
   }
 
   const tasksNoun = taskList.length !== 1 ? "tasks" : "task";
   const headingText = `${taskList.length} ${tasksNoun} remaining`;
+  const totalTasksNoun = tasks.length !== 1 ? "tasks" : "task";
+  const bannerInfo = `${tasks.length} ${totalTasksNoun} total`;
 
   const listHeadingRef = useRef(null);
   const prevTaskLength = usePrevious(tasks.length);
@@ -97,7 +107,15 @@ function App(props) {
 
   return (
     <div className="todoapp stack-large">
-      <h1>TodoMatic</h1>
+      <header className="app-banner">
+        <div className="app-banner__text">
+          <h1>TodoMatic</h1>
+          <p className="app-banner__subtitle">React + Vite demo</p>
+        </div>
+        <div className="app-banner__info" aria-live="polite">
+          {bannerInfo}
+        </div>
+      </header>
       <Form addTask={addTask} />
       <div className="filters btn-group stack-exception">{filterList}</div>
       <h2 id="list-heading" tabIndex="-1" ref={listHeadingRef}>

@@ -11,6 +11,7 @@ function usePrevious(value) {
 function Todo(props) {
   const [isEditing, setEditing] = useState(false);
   const [newName, setNewName] = useState("");
+  const [newDueDate, setNewDueDate] = useState("");
 
   const editFieldRef = useRef(null);
   const editButtonRef = useRef(null);
@@ -21,14 +22,25 @@ function Todo(props) {
     setNewName(event.target.value);
   }
 
+  function handleDueDateChange(event) {
+    setNewDueDate(event.target.value);
+  }
+
   // NOTE: As written, this function has a bug: it doesn't prevent the user
   // from submitting an empty form. This is left as an exercise for developers
   // working through MDN's React tutorial.
   function handleSubmit(event) {
     event.preventDefault();
-    props.editTask(props.id, newName);
+    props.editTask(props.id, newName, newDueDate);
     setNewName("");
+    setNewDueDate("");
     setEditing(false);
+  }
+
+  function handleStartEditing() {
+    setNewName(props.name);
+    setNewDueDate(props.dueDate || "");
+    setEditing(true);
   }
 
   const editingTemplate = (
@@ -46,10 +58,22 @@ function Todo(props) {
           ref={editFieldRef}
         />
       </div>
+      <div className="form-group">
+        <label className="todo-label" htmlFor={`${props.id}-due`}>
+          Due date
+        </label>
+        <input
+          id={`${props.id}-due`}
+          className="todo-text"
+          type="date"
+          value={newDueDate}
+          onChange={handleDueDateChange}
+        />
+      </div>
       <div className="btn-group">
         <button
           type="button"
-          className="btn todo-cancel"
+          className="btn btn__neutral todo-cancel"
           onClick={() => setEditing(false)}>
           Cancel
           <span className="visually-hidden">renaming {props.name}</span>
@@ -75,12 +99,15 @@ function Todo(props) {
           {props.name}
         </label>
       </div>
+      {props.dueDate ? (
+        <p className="todo-due">{props.dueDate}</p>
+      ) : null}
       <div className="btn-group">
         <button
           type="button"
           className="btn"
           onClick={() => {
-            setEditing(true);
+            handleStartEditing();
           }}
           ref={editButtonRef}>
           Edit <span className="visually-hidden">{props.name}</span>
